@@ -20,8 +20,7 @@ export const todoRemainingSelector = createSelector(
   (todoList, searchText, status,priorities) => {
     
     return todoList.filter((todo) => {
-      console.log(priorities)
-      console.log(todo.priority)
+     
        if(status === 'All'){
           return priorities.length ? todo.name.toLowerCase().includes(searchText.toLowerCase() ) && priorities.includes(todo.priority) : todo.name.toLowerCase().includes(searchText.toLowerCase() )
        }

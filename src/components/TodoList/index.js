@@ -7,6 +7,10 @@ import {  todoRemainingSelector } from '../../redux/selector'
 // import { addTodo } from '../../redux/actions';
 import todoListSlice from './todosSlice'
 
+import {Formik, Form } from 'formik'
+import { TextField, SelectField } from './textField';
+import * as Yup from 'yup';
+
 
 export default function TodoList() {
 const [todoName,setTodoName] = useState("")
@@ -14,9 +18,11 @@ const [priority,setPriority] = useState("Medium")
 
 const todoList = useSelector(todoRemainingSelector)
 
+
 const dispatch = useDispatch()
 
 const handleAddButtonClick = ()=>{
+  
   dispatch(
     todoListSlice.actions.addTodo({
     id:uuidv4(),
@@ -36,31 +42,74 @@ setTodoName(e.target.value)
 const handlePriorityChange = (value) => {
   setPriority(value)
 }
+
+
+const validationSchema = Yup.object({
+  todoName: Yup.string()
+  .min(3, 'Todo name must be at least 3 characters')
+  .required('Todo name is required'),
+  priority: Yup.string()
+  .required('Priority is required')
+
+})
   return (
     <Row style={{ height: 'calc(100% - 40px)' }}>
       <Col span={24} style={{ height: 'calc(100% - 40px)', overflowY: 'auto' }}>
         {todoList.map(todo => <Todo key={todo.id} id={todo.id} name={todo.name} priority={todo.priority} completed={todo.completed}/>)}
-       
       </Col>
-      <Col span={24}>
+
+      <Formik 
+        initialValues={{
+          todoName:'',
+          priority:''
+        }}
+        validationSchema={validationSchema}
+        onSubmit={values =>{
+          console.log(values)
+          dispatch(
+            todoListSlice.actions.addTodo({
+            id:uuidv4(),
+            name:values.todoName,
+            priority:values.priority,
+            completed:false
+          }))
+        
+          
+        }}
+      >
+        {formik =>(
+          <Form>
+          <Col span={24}>
         <Input.Group style={{ display: 'flex' }} compact>
-          <Input value={todoName}  onChange={handleInputChange}/>
-          <Select defaultValue="Medium" value={priority} onChange={handlePriorityChange}>
-            <Select.Option value='High' label='High'>
+          {/* <TextField value={todoName}  onChange={handleInputChange} label='Input Add' name='addInput' placeholder="Input Add"/> */}
+          <TextField   label='Input Add' name='todoName' placeholder="Input Add"/>
+          
+          <SelectField  name='priority'>
+            
+            <option value='' label='Choose Priority'>
+              <Tag >Choose Priority</Tag>
+            </option>
+            <option value='High' label='High'>
               <Tag color='red'>High</Tag>
-            </Select.Option>
-            <Select.Option value='Medium' label='Medium'>
+            </option>
+            <option value='Medium' label='Medium'>
               <Tag color='blue'>Medium</Tag>
-            </Select.Option>
-            <Select.Option value='Low' label='Low'>
+            </option>
+            <option value='Low' label='Low'>
               <Tag color='gray'>Low</Tag>
-            </Select.Option>
-          </Select>
-          <Button type='primary' onClick={handleAddButtonClick}>
+            </option>
+          </SelectField>
+          {/* <Button type='submit' onClick={handleAddButtonClick}>Add</Button> */}
+          <button className="btn btn-dark mt-3" type='submit' >
             Add
-          </Button>
+          </button>
         </Input.Group>
       </Col>
+          </Form>
+      
+        )}
+
+      </Formik>
     </Row>
   );
 }
