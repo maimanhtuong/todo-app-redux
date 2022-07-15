@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid'
 import { useState } from 'react';
 import {  todoRemainingSelector } from '../../redux/selector'
-// import { addTodo } from '../../redux/actions';
-import todoListSlice from './todosSlice'
+import  { addNewTodo } from './todosSlice'
 
 import {Formik, Form } from 'formik'
 import { TextField, SelectField } from './textField';
@@ -17,32 +16,11 @@ const [todoName,setTodoName] = useState("")
 const [priority,setPriority] = useState("Medium")
 
 const todoList = useSelector(todoRemainingSelector)
+// const todoList1= useSelector(state => state.todoList.todos)
+// console.log({todoList1})
 
 
 const dispatch = useDispatch()
-
-const handleAddButtonClick = ()=>{
-  
-  dispatch(
-    todoListSlice.actions.addTodo({
-    id:uuidv4(),
-    name:todoName,
-    priority:priority,
-    completed:false
-  }))
-
-  setTodoName('')
-  setPriority('Medium')
-}
-
-const handleInputChange = (e) =>{
-setTodoName(e.target.value)
-}
-
-const handlePriorityChange = (value) => {
-  setPriority(value)
-}
-
 
 const validationSchema = Yup.object({
   todoName: Yup.string()
@@ -65,15 +43,30 @@ const validationSchema = Yup.object({
         }}
         validationSchema={validationSchema}
         onSubmit={values =>{
-          console.log(values)
-          dispatch(
-            todoListSlice.actions.addTodo({
-            id:uuidv4(),
-            name:values.todoName,
-            priority:values.priority,
-            completed:false
-          }))
-        
+          // dispatch(
+          //   todoListSlice.actions.addTodo({
+          //   id:uuidv4(),
+          //   name:values.todoName,
+          //   priority:values.priority,
+          //   completed:false
+          // }))
+
+          // dispatch(addTodos(
+          //   {
+          //         id:uuidv4(),
+          //         name:values.todoName,
+          //         priority:values.priority,
+          //         completed:false
+          //   }
+          // ))
+          dispatch(addNewTodo({
+                  id:uuidv4(),
+                  name:values.todoName,
+                  priority:values.priority,
+                  completed:false
+        }))
+        setTodoName('')
+        setPriority('Medium')
           
         }}
       >
